@@ -211,6 +211,7 @@ def groupesSuperieurA2(tab):
             dico[i] = j
     return dico
 
+
 def removeGrp(tab, listeCoord):
     "enleve le groupe du tab"
     ntab = copie(tab)
@@ -282,6 +283,7 @@ def swappePaireDebug(tab, coupleCoord, debug=False):
 def quellePaire(tab):
     """quelle paire swapper pour faire le plus de points."""
     #print tab, dgrp, nbprevision
+    paire=None
     listePaire=[]
     for (ki, i) in enumerate(tab):
         for (kj, j) in enumerate(i):
@@ -347,15 +349,22 @@ def tabApresSwap(tab, coupleCoord):
 def affswapEtRes(tab, coord):
     "affichage du tableau avec la paire et le résultat"
     (res, nbp) = tabApresSwap(tab, coord)
-    print "-" * 30
-    print nbp
+    print "-" * 44
+    (t,n)=tabApresSwap(tabCases,((-1,-1),(-1,-1)))
+    
+    print nbp,
+    if (t!=tab):
+        print (col[1]+"/!\ La detection contient un bug!!!"+col[0])
     for ((ki,i),i2) in zip(enumerate(tab),res):
         for (kj,j) in enumerate(i):
             if((ki,kj) in coord):
                 sys.stdout.write(pieceswap[j])
             else:
                 sys.stdout.write(pieces[j])
-        sys.stdout.write(" -> ")                
+        if ki==0:
+            sys.stdout.write(col[1]+" -> "+col[0])
+        else:
+            sys.stdout.write(" -> ")                
         for j in i2:
             sys.stdout.write(pieces[j])
         print
@@ -382,8 +391,7 @@ blanc = 5
 ##     ]
 #http://www.dailymotion.com/video/x3w81e_cooking-lili-54810_videogames
 
-if len(sys.argv)<2:
-    tabCases = [
+tabCases = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [1,2,2,1,1,3,1,3,1,3],
@@ -395,7 +403,8 @@ if len(sys.argv)<2:
     [3,1,3,3,2,1,3,1,2,3],
     [3,1,2,1,3,1,3,2,3,2],
     ]
-else:
+
+if len(sys.argv)>=2:
     nomPlateau=sys.argv[1]
     plateau=Image.open(nomPlateau)
     cropx = int(sys.argv[2])
@@ -431,4 +440,3 @@ else:
 afftab(tabCases)
 for itemPaire in ListePaire(tabCases)[-3:]:
     affswapEtRes(tabCases, itemPaire[0])
-
