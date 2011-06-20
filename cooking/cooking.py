@@ -85,6 +85,7 @@ def affswap(tab, coord):
         print
     print
     
+    
 def aff2tab(tab,tab2):
     "affichage des tableaux en couleur (avant après)"
     for (i,iii) in zip(tab, tab2):
@@ -249,7 +250,7 @@ def swappePaire(tab, coupleCoord):
     "retourne le nb de pt après avoir swapper la paire"
     return swappePaireDebug(tab, coupleCoord, 0)
 
-def swappePaireDebug(tab, coupleCoord, debug):
+def swappePaireDebug(tab, coupleCoord, debug=False):
     "retourne le nb de pt après avoir swapper la paire (affiche le tableau)"
     ntab = copie(tab)
     if debug:
@@ -298,11 +299,68 @@ def quellePaire(tab):
             paire = coord
     return paire
     
+def ListePaire(tab):
+    """quelle paire swapper pour faire le plus de points."""
+    #print tab, dgrp, nbprevision
+    listePaire=[]
+    for (ki, i) in enumerate(tab):
+        for (kj, j) in enumerate(i):
+            if(kj < len(i) - 1):
+                if j and tab[ki][kj + 1]:
+                    listePaire.append(((ki, kj), (ki, kj + 1)))
+            if(ki < len(tab) - 1):
+               if j and tab[ki + 1][kj]:
+                    listePaire.append(((ki, kj), (ki +1, kj)))
+    best = []
+    for coord in listePaire:
+        score = swappePaire(tab,coord)
+        best.append((coord,score))
+    best = sorted(best, key=lambda x: x[1])
+    return best
+    
 if hasattr(sys, 'ps1'):
     aff = afftabNB
 else:
     aff = afftab 
 
+def tabApresSwap(tab, coupleCoord):
+    "retourne le tab et le nombre de point si on swappe cC"
+    ntab = copie(tab)
+    ((i1, j1), (i2, j2)) = coupleCoord
+    ntab[i1][j1], ntab[i2][j2] = ntab[i2][j2], ntab[i1][j1]
+    fini = 0
+    iteration = 0
+    nbpoint = 0
+    while(not fini):
+        nntab = copie(ntab)
+        grp = groupesSuperieurA2(ntab)
+        if(grp != {}):
+            iteration +=1
+        for i,j in grp.items():
+            nbpoint += nbpoints(len(j), iteration,ntab[j[0][0]][j[0][1]])
+            ntab = removeGrpDegele(ntab, j)
+        ntab = tasse(ntab)
+        if(nntab==ntab):
+            fini = 1
+    return (nntab, nbpoint)
+
+def affswapEtRes(tab, coord):
+    "affichage du tableau avec la paire et le résultat"
+    (res, nbp) = tabApresSwap(tab, coord)
+    print "-" * 30
+    print nbp
+    for ((ki,i),i2) in zip(enumerate(tab),res):
+        for (kj,j) in enumerate(i):
+            if((ki,kj) in coord):
+                sys.stdout.write(pieceswap[j])
+            else:
+                sys.stdout.write(pieces[j])
+        sys.stdout.write(" -> ")                
+        for j in i2:
+            sys.stdout.write(pieces[j])
+        print
+    print
+    
 noir = 0
 rouge = 1
 vert = 2
@@ -323,7 +381,9 @@ blanc = 5
 ##     [1,-3,1,1,3,1,1,2,1,3]
 ##     ]
 #http://www.dailymotion.com/video/x3w81e_cooking-lili-54810_videogames
-tabCases = [
+
+if len(sys.argv)<2:
+    tabCases = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [1,2,2,1,1,3,1,3,1,3],
@@ -335,57 +395,40 @@ tabCases = [
     [3,1,3,3,2,1,3,1,2,3],
     [3,1,2,1,3,1,3,2,3,2],
     ]
+else:
+    nomPlateau=sys.argv[1]
+    plateau=Image.open(nomPlateau)
+    cropx = int(sys.argv[2])
+    cropy = int(sys.argv[3])
+    width, height = 25, 25
+    decx = 26
+    decy = 26
 
 
-nomPlateau=sys.argv[1]
-plateau=Image.open(nomPlateau)
-cropx = int(sys.argv[2])
-cropy = int(sys.argv[3])
-width, height = 25, 25
-decx = 26
-decy = 26
+    for i in range(10):
+        for j in range(10):
+    #       crop=plateau.crop((cropx + decx + i*width, decy + (j+1)*height, decx + (i+1)*width, decy + (j+2)*height))
+            RN = 0.0
+            GN = 0.0
+            BN = 0.0
+            decImgX=cropx + decx + i*width
+            decImgY=cropy + decy + (j+1)*height
+            for ii in range(width/3, 2*width/3):
+                for jj in range(height/3, 2*height/3):
+                    r,g,b=plateau.getpixel((ii+decImgX,jj+decImgY))
+                    RN+=r
+                    GN+=g
+                    BN+=b
 
 
-for i in range(10):
-    for j in range(10):
-#       crop=plateau.crop((cropx + decx + i*width, decy + (j+1)*height, decx + (i+1)*width, decy + (j+2)*height))
-        RN = 0.0
-        GN = 0.0
-        BN = 0.0
-        decImgX=cropx + decx + i*width
-        decImgY=cropy + decy + (j+1)*height
-        for ii in range(width/3, 2*width/3):
-            for jj in range(height/3, 2*height/3):
-                r,g,b=plateau.getpixel((ii+decImgX,jj+decImgY))
-                RN+=r
-                GN+=g
-                BN+=b
-                
-                
-        RN/=(width/3)*(height/3)
-        GN/=(width/3)*(height/3)
-        BN/=(width/3)*(height/3)
-        tabCases[j][i]=coulFruit(RN,GN,BN)
+            RN/=(width/3)*(height/3)
+            GN/=(width/3)*(height/3)
+            BN/=(width/3)*(height/3)
+            tabCases[j][i]=coulFruit(RN,GN,BN)
 
 
 
 afftab(tabCases)
-coord = quellePaire(tabCases)   
-affswap(tabCases, coord)
-
-#coord = quellePaire(tabCases)
-#score = swappePaireDebug(tabCases, coord,1)
-#print score
-
-###
-## n = swappePaire(tabCases, ((7,7),(6,7)))
-## ntab=tabCases
-
-## grp = groupesSuperieurA2(ntab)
-## for i,j in grp.items():
-##     ntab = removeGrpDegele(ntab, j)
-## afftab(ntab)
-## coord = quellePaire(ntab)    
-## affswap(ntab, coord)
-## swappePaireDebug(ntab, coord,1)
+for itemPaire in ListePaire(tabCases)[-3:]:
+    affswapEtRes(tabCases, itemPaire[0])
 
