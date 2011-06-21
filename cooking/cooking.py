@@ -343,16 +343,19 @@ bleu = 4
 blanc = 5
 
 tabCases = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 2, 2, 1, 1, 3, 1, 3, 1, 3],
     [2, 3, 1, 3, 3, 2, 2, 1, 2, 3],
     [3, 1, 3, 2, 2, 1, 1, 3, 1, 2],
     [3, 2, 1, 3, 1, 3, 3, 1, 2, 1],
     [2, 1, 2, 2, 1, 2, 1, 3, 1, 3],
-    [1, 3, 1, 1, 3, 3, 2, 1, 2, 1],
-    [3, 1, 3, 3, 2, 1, 3, 1, 2, 3],
+    [-4, 3, 1, 1, 3, 3, 2, 1, 2, 1],
+    [-5, 1, 3, 3, 2, 1, 3, 1, 2, 3],
     [3, 1, 2, 1, 3, 1, 3, 2, 3, 2],
+#    [1, 3, 1, 1, 3, 3, 2, 1, 2, 1],
+#    [3, 1, 3, 3, 2, 1, 3, 1, 2, 3],
+#    [3, 1, 2, 1, 3, 1, 3, 2, 3, 2],
     ]
 
 ## tabCases = [
@@ -403,7 +406,10 @@ if len(sys.argv) >= 2:
 
 
 #afftab(tabCases)
-for itemPaire in ListePaire(tabCases)[-3:]:
+listeComplete = ListePaire(tabCases)
+listeNonPerdu = filter(lambda x: x[2][0] == [0] * 10 , listeComplete[:-1])
+meilleurPuisNonPerdu = listeNonPerdu + [listeComplete[-1]]
+for itemPaire in meilleurPuisNonPerdu[-3:]:
     affswapEtRes(tabCases, itemPaire[0], itemPaire[1], itemPaire[2])
 
 (t, n)=tabApresSwap(tabCases, ((-1, -1), (-1, -1)))
