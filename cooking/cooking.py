@@ -198,7 +198,7 @@ def groupesSuperieurA2(tab):
     dicoGrp = groupes(tab)
     dico = {}
     for (i,j) in dicoGrp.items():
-        if (len(j) > 2):
+        if (len(j) > 2) and tab[j[0][0]][j[0][1]] > 0:
             dico[i] = j
     return dico
 
@@ -371,6 +371,19 @@ tabCases = [
 ##     [1,-3,1,1,3,1,1,2,1,2]
 ##     ]
 #http://www.dailymotion.com/video/x3w81e_cooking-lili-54810_videogames
+
+tabCases = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
 
 if len(sys.argv) >= 2:
     nomPlateau = sys.argv[1]
